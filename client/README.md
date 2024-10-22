@@ -1,8 +1,29 @@
-# React + Vite
+**Prototype Link**: https://excalidraw.com/#json=w5oU_7BDhYKgTqfPY1jnR,gL0qgYCBPIkQ3Nxs_JCqGQ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Getting Started
+Follow these steps to get started
 
-Currently, two official plugins are available:
+### Prerequisite
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js (https://nodejs.org/) installed on your machine.
+- TMDB (https://developer.themoviedb.org/) API keys
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/singodiyashubham87/Chala-Chitra-Kendra.git
+cd Chala-Chitra-Kendra
+```
+   
+2. Install dependencies:
+```bash
+cd client
+npm install
+```
+3. Edit the .env file taking reference from the .env.example file:
+
+4. Start the app:
+```bash
+npm run dev
+  ```
