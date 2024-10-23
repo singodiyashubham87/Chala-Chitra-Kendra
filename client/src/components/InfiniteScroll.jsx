@@ -4,7 +4,6 @@ import { useMovies } from "../context/MoviesContext";
 
 const InfiniteScroll = () => {
   const { loadMoreMovies, isFavoritesShown } = useMovies();
-  console.log("🚀 ~ InfiniteScroll ~ isFavoritesShown:", isFavoritesShown)
   useEffect(() => {
     if (isFavoritesShown) return;
     const handleScroll = () => {
