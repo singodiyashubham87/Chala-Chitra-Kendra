@@ -1,4 +1,7 @@
-**Prototype Link**: https://excalidraw.com/#json=w5oU_7BDhYKgTqfPY1jnR,gL0qgYCBPIkQ3Nxs_JCqGQ
+# Chala-Chitra-Kendra
+A movie-browsing web application that allows users to search for movies with advanced filtering options and save their favorite movies.
+
+**Web-App Prototype Link**: https://excalidraw.com/#json=w5oU_7BDhYKgTqfPY1jnR,gL0qgYCBPIkQ3Nxs_JCqGQ
 
 ## Getting Started
 Follow these steps to get started

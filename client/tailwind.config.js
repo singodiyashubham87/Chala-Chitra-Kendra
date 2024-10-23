@@ -24,7 +24,7 @@ export default {
         gsm: "571px",
         msm: "491px",
         vsm: "441px",
-        vvsm: "351px",
+        vvsm: "375px",
       },
     },
   },

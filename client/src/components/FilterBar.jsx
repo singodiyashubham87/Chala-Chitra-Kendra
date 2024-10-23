@@ -1,96 +1,149 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { fetchMoviesByGenreId } from "../utils/helpers";
+import { fetchAndSetGenres } from "../utils/helpers";
+import axios from "axios";
 
 const FilterBar = ({ setMovies, toast, setIsLoading }) => {
   const [genres, setGenres] = useState([]);
-  const [years, setYears] = useState([]);
+  const [startYear, setStartYear] = useState(1900);
+  const [endYear, setEndYear] = useState(new Date().getFullYear());
   const [selectedGenre, setSelectedGenre] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [ratingRange, setRatingRange] = useState("");
+  const [ratingRange, setRatingRange] = useState(0);
 
-  const fetchAndSetGenres = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/genre/movie/list`,
-      {
+  useEffect(() => {
+    fetchAndSetGenres(setGenres);
+  }, []);
+
+  const handleGenreChange = (e) => {
+    const genre = e.target.value;
+    setSelectedGenre(genre);
+    fetchFilteredMovies(genre, [startYear, endYear], ratingRange);
+  };
+
+  const handleStartYearChange = (e) => {
+    const year = Number(e.target.value);
+    setStartYear(year);
+    if (year <= endYear) {
+      fetchFilteredMovies(selectedGenre, [year, endYear], ratingRange);
+    } else {
+      toast("🦄 Start year cannot be greater than end year!");
+    }
+  };
+
+  const handleEndYearChange = (e) => {
+    const year = Number(e.target.value);
+    setEndYear(year);
+    if (year >= startYear) {
+      fetchFilteredMovies(selectedGenre, [startYear, year], ratingRange);
+    } else {
+      toast("🦄 End year cannot be less than start year!");
+    }
+  };
+
+  const handleRatingChange = (e) => {
+    const rating = Number(e.target.value);
+    setRatingRange(rating);
+    fetchFilteredMovies(selectedGenre, [startYear, endYear], rating);
+  };
+
+  const fetchFilteredMovies = async (genre, [startYear, endYear], rating) => {
+    try {
+      setIsLoading(true);
+
+      const params = {
+        "primary_release_date.gte": `${startYear}-01-01`,
+        "primary_release_date.lte": `${endYear}-12-31`,
+        include_adult: "false",
+        "vote_average.gte": rating,
+      };
+
+      if (genre) {
+        params.with_genres = genres.find((g) => g.name === genre)?.id;
+      }
+
+      const url = `${import.meta.env.VITE_BASE_URL}/discover/movie`;
+      const res = await axios.get(url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${
             import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN
           }`,
         },
+        params,
+      });
+
+      const movies = res?.data?.results;
+      if (movies) {
+        setMovies(movies);
+      } else {
+        toast("🦄 No movies found for the selected filters!");
       }
-    );
-    const data = await response.json();
-    const genres = data?.genres;
-    setGenres(genres);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+      toast("🦄 Error fetching movies!");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const fetchAndSetYear = () => {
-    const years = [
-      2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021,
-      2022, 2023, 2024,
-    ];
-    setYears(years);
-  };
-
-  useEffect(() => {
-    fetchAndSetGenres();
-    fetchAndSetYear();
-  }, []);
-
-  const handleGenreChange = async (e) => {
-    const selectedGenre = e.target.value;
-    setSelectedGenre(selectedGenre);
-    const genreId = genres.find((genre) => genre.name === selectedGenre)?.id;
-    const movies = await fetchMoviesByGenreId(genreId, toast, setIsLoading, setMovies)
-    setMovies(movies);
-  };
-
-  const handleYearChange = (e) => {
-    setSelectedYear(e.target.value);
-  };
-
-  const handleRatingChange = (e) => {
-    const value = Number(e.target.value);
-    setRatingRange(value);
+  const generateYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = 1900; year <= currentYear; year++) {
+      years.push(year);
+    }
+    return years;
   };
 
   return (
-    <div className="filter-bar border-2 border-black p-2 flex justify-evenly items-center gap-4 rounded-md bg-slate-400">
-      <div className="border-2 border-black genre">
-        <select value={selectedGenre} onChange={handleGenreChange}>
-          <option value="">Select Genre</option>
-          {Array.isArray(genres) &&
-            genres.map((genre) => (
+    <div className="filter-bar p-2 flex flex-col justify-evenly items-center gap-4 rounded-md">
+      <div className="flex flex-col sm:flex-row gap-4 items-center">
+        <div className="border-2 border-black genre">
+          <select value={selectedGenre} onChange={handleGenreChange} className="bg-slate-300">
+            <option value="">Select Genre</option>
+            {genres.map((genre) => (
               <option key={genre.id} value={genre.name}>
                 {genre.name}
               </option>
             ))}
-        </select>
+          </select>
+        </div>
+
+        <div className="border-2 border-black rounded-md bg-slate-300 text-center vvsm:px-4 vvsm:py-2">
+          <label className="text-sm vvsm:text-lg">Rating Range: {ratingRange}</label>
+          <input
+            type="range"
+            min="0"
+            max="10"
+            step="0.1"
+            value={ratingRange}
+            onChange={handleRatingChange}
+          />
+        </div>
       </div>
 
-      <div className="border-2 border-black releaseYear">
-        <select value={selectedYear} onChange={handleYearChange}>
-          <option value="">Select Year</option>
-          {Array.isArray(years) &&
-            years.map((year) => (
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="border-2 border-black rounded-md bg-slate-300 px-4">
+          <label className="text-sm vvsm:text-lg">Start Year:</label>
+          <select value={startYear} onChange={handleStartYearChange} className="bg-slate-300">
+            {generateYearOptions().map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
             ))}
-        </select>
-      </div>
+          </select>
+        </div>
 
-      <div className="border-2 border-black rounded-md py-2 px-4 bg-slate-300">
-        <label>Rating Range: {ratingRange}</label>
-        <input
-          type="range"
-          min="0"
-          max="10"
-          value={ratingRange}
-          onChange={handleRatingChange}
-        />
+        <div className="border-2 border-black rounded-md bg-slate-300 px-4">
+          <label className="text-sm vvsm:text-lg">End Year:</label>
+          <select value={endYear} onChange={handleEndYearChange} className="bg-slate-300">
+            {generateYearOptions().map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );

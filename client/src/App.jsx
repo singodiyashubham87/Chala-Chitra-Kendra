@@ -10,8 +10,10 @@ import MOVIE from "./constants/MOVIE";
 import { fetchMovies } from "./utils/helpers";
 
 const App = () => {
+  const [allMovies, setAllMovies] = useState([])
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFavoritesShown, setIsFavoritesShown] = useState(false);
   const [favorites, setFavorites] = useState(
     JSON.parse(localStorage.getItem("favoriteMovies")) || []
   );
@@ -19,7 +21,6 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem("favoriteMovies", JSON.stringify(favorites));
   }, [favorites]);
-
 
   useEffect(() => {
     const loadInitialMovies = async () => {
@@ -54,15 +55,41 @@ const App = () => {
     });
   };
 
+  const handleMyFavoriteClick = () => {
+    if (isFavoritesShown) {
+      setMovies(allMovies);
+    } else {
+      setAllMovies(movies)
+      setMovies(movies.filter((movie) => favorites.includes(movie?.id)));
+    }
+    setIsFavoritesShown(!isFavoritesShown);
+  };
+
   return (
-    <div className="w-full bg-slate-200 min-h-screen p-4 flex flex-col items-center">
-      <h1 className="text-[2rem] font-bold uppercase pb-4">
-        Chala-Chitra-Kendra
-      </h1>
-      <div className="w-[90%] border-2 border-black rounded-md p-4 bg-slate-600">
-        <div className="flex justify-between items-center ">
-          <FilterBar setMovies={setMovies} toast={toast} setIsLoading={setIsLoading} />
-          <SearchBar setMovies={setMovies} toast={toast} setIsLoading={setIsLoading}/>
+    <div className="w-full bg-slate-200 min-h-screen px-0 py-4 md:px-4 flex flex-col items-center">
+      <div className="flex w-[97%] md:w-[90%] gap-4 items-center justify-between pb-4">
+        <h1 className="text-sm vvsm:text-xl md:text-[2rem] font-bold uppercase">
+          Chala-Chitra-Kendra
+        </h1>
+        <button
+          className="px-4 py-2 bg-slate-300 border-2 border-black rounded-md"
+          onClick={handleMyFavoriteClick}
+        >
+          {isFavoritesShown ? "All Movies" : "My Favorites"}
+        </button>
+      </div>
+      <div className="w-[97%] md:w-[90%] border-2 border-black rounded-md p-4 bg-slate-600">
+        <div className="flex flex-col gap-2 md:px-8 justify-between items-center mmd:flex-row md:gap-0">
+          <FilterBar
+            setMovies={setMovies}
+            toast={toast}
+            setIsLoading={setIsLoading}
+          />
+          <SearchBar
+            setMovies={setMovies}
+            toast={toast}
+            setIsLoading={setIsLoading}
+          />
         </div>
         <MovieGrid
           movies={movies}

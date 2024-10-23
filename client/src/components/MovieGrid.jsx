@@ -9,7 +9,7 @@ const MovieGrid = ({ movies, onFavorite, favorites }) => {
       {Array.isArray(movies) &&
         movies.map((movie) => (
           <MovieCard
-            key={movie.poster_path}
+            key={movie.backdrop_path}
             movie={movie}
             onFavorite={onFavorite}
             favorites={favorites}

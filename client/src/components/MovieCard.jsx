@@ -2,7 +2,7 @@
 const MovieCard = ({ movie, onFavorite, favorites }) => {
   return (
     <div className="movie-card border-2 border-black bg-slate-400 flex flex-col gap-4 p-2 rounded-md">
-      <div className="border-2 border-black w-72 h-44 overflow-hidden rounded-lg">
+      <div className="border-2 border-black w-52 h-24 vvsm:w-72 vvsm:h-44 overflow-hidden rounded-lg">
         <img
           src={
             movie?.poster_path
@@ -13,7 +13,7 @@ const MovieCard = ({ movie, onFavorite, favorites }) => {
           className="w-full h-full object-cover object-center"
         />
       </div>
-      <div className="flex w-72 justify-between items-center text-slate-900">
+      <div className="flex w-52 vvsm:w-72 justify-between items-center text-slate-900">
         <div className="flex flex-col justify-center w-[85%]">
           <h1 title={movie.title}>
             <strong>Name:</strong> {movie?.title}
