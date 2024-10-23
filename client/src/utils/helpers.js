@@ -85,4 +85,41 @@ const debounce = (func) => {
   };
 };
 
-export { fetchMovies, searchMovies, debounce };
+const fetchMoviesByGenreId = async (genreId, toast, setIsLoading) => {
+  setIsLoading(true);
+  const url = `${import.meta.env.VITE_BASE_URL}/discover/movie`;
+
+  try {
+    if (!genreId) {
+      console.error("Genre ID is required");
+      return await fetchMovies(toast, setIsLoading);
+    }
+    const res = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${
+          import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN
+        }`,
+      },
+      params: {
+        with_genres: genreId,
+        page: 1,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!data?.results) {
+      toast("🦄 No movies found for this genre!");
+      return;
+    }
+    return data.results;
+  } catch (error) {
+    console.error("Error fetching movies by genre:", error);
+    toast("🦄 Error fetching movies by genre!");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+export { fetchMovies, searchMovies, debounce, fetchMoviesByGenreId };

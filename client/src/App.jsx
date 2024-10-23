@@ -54,12 +54,6 @@ const App = () => {
     });
   };
 
-  const handleFilterChange = (filters) => {
-    // Apply filters to movie data (you can make an API call here)
-    // Example: Filtering logic for local state (replace with actual filtering logic)
-    console.log(filters);
-  };
-
   return (
     <div className="w-full bg-slate-200 min-h-screen p-4 flex flex-col items-center">
       <h1 className="text-[2rem] font-bold uppercase pb-4">
@@ -67,7 +61,7 @@ const App = () => {
       </h1>
       <div className="w-[90%] border-2 border-black rounded-md p-4 bg-slate-600">
         <div className="flex justify-between items-center ">
-          <FilterBar onFilterChange={handleFilterChange} />
+          <FilterBar setMovies={setMovies} toast={toast} setIsLoading={setIsLoading} />
           <SearchBar setMovies={setMovies} toast={toast} setIsLoading={setIsLoading}/>
         </div>
         <MovieGrid
