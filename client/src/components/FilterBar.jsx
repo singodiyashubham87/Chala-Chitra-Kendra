@@ -12,7 +12,22 @@ const FilterBar = ({ onFilterChange }) => {
     const fetchGenres = async () => {
       // const genreData = await fetch('/api/genres');
       // const genres = await genreData.json();
-      const genress = ["Action", "Comedy", "Adventure", "Fantasy"];
+      const genress = [{
+        "id": 28,
+        "name": "Action"
+      },
+      {
+        "id": 12,
+        "name": "Adventure"
+      },
+      {
+        "id": 16,
+        "name": "Animation"
+      },
+      {
+        "id": 35,
+        "name": "Comedy"
+      },]
       setGenres(genress);
     };
 

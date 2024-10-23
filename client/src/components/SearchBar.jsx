@@ -1,11 +1,12 @@
-import { useCallback, useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useCallback, useRef, useState } from "react";
+import { debounce, searchMovies } from "../utils/helpers";
 
 /* eslint-disable react/prop-types */
-const SearchBar = ({ setMovies }) => {
+const SearchBar = ({ setMovies, toast, setIsLoading }) => {
   const [query, setQuery] = useState("");
 
   const fetchMovies = useCallback(() => {
-    // Debounce logic here
     if (query) {
       fetch(`https://api.example.com/movies?search=${query}`)
         .then((response) => response.json())
@@ -13,10 +14,19 @@ const SearchBar = ({ setMovies }) => {
     }
   }, [query, setMovies]);
 
-  const handleSearch = (e) => {
-    setQuery(e.target.value);
-    // Adding debounce
-    setTimeout(fetchMovies, 300);
+  const debouncedSearchMovies = useRef(
+    debounce(async (query) => {
+      setIsLoading(true);
+      const searchResultMovies = await searchMovies(query, toast, setIsLoading, setMovies);
+      setMovies(searchResultMovies);
+      setIsLoading(false);
+    })
+  ).current;
+
+  const handleSearch = async (e) => {
+    const newQuery = e.target.value
+    setQuery(newQuery);
+    debouncedSearchMovies(newQuery);
   };
 
   return (

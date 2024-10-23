@@ -4,41 +4,44 @@ import SearchBar from "./components/SearchBar";
 import MovieGrid from "./components/MovieGrid";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+import Loader from "./components/Loader";
+import InfiniteScroll from "./components/InfiniteScroll";
+import MOVIE from "./constants/MOVIE";
+import { fetchMovies } from "./utils/helpers";
 
 const App = () => {
   const [movies, setMovies] = useState([]);
-  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem("favoriteMovies")) || []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [favorites, setFavorites] = useState(
+    JSON.parse(localStorage.getItem("favoriteMovies")) || []
+  );
 
   useEffect(() => {
     localStorage.setItem("favoriteMovies", JSON.stringify(favorites));
   }, [favorites]);
 
-  const fetchMovies = async () => {
-    try {
-      const url = import.meta.env.VITE_BASE_URL;
-      const res = await axios.get(`${url}/discover/movie`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN
-          }`,
-        },
-      });
-      console.log("response:", res.data);
-    } catch (error) {
-      console.error("Error in fetching movies", error);
+
+  useEffect(() => {
+    const loadInitialMovies = async () => {
+      const initialMovies = await fetchMovies(toast, setIsLoading);
+      setMovies(initialMovies ?? []);
+    };
+
+    loadInitialMovies();
+  }, []);
+
+  const loadMoreMovies = async () => {
+    const nextPage = movies.length / MOVIE.PER_PAGE_SIZE + 1;
+    const moreMovies = await fetchMovies(toast, setIsLoading, nextPage);
+
+    if (moreMovies.length > 0) {
+      setMovies((prev) => [...prev, ...moreMovies]);
+    } else {
+      toast("🦄 Error fetching more movies!");
     }
   };
 
-  useEffect(() => {
-    // const movies = fetchMovies();
-    const moviess = [{id:1, title:"The Worlf", release_date:"2019-09-05", img:'https://cms.imgworlds.com/assets/a5366382-0c26-4726-9873-45d69d24f819.jpg?key=home-gallery'}, {id:2, title:"Master", release_date:"2014-09-05", img:'https://cms.imgworlds.com/assets/a5366382-0c26-4726-9873-45d69d24f819.jpg?key=home-gallery'},{id:3, title:"The Lion King", release_date:"2013-09-05", img:'https://cms.imgworlds.com/assets/a5366382-0c26-4726-9873-45d69d24f819.jpg?key=home-gallery'}, {id:4, title:"V", release_date:"2011-09-05", img:'https://cms.imgworlds.com/assets/a5366382-0c26-4726-9873-45d69d24f819.jpg?key=home-gallery'}]
-    setMovies(moviess ?? []);
-  }, []);
-
   const handleFavorite = (movie) => {
-    console.log("🚀 ~ handleFavorite ~ movie:", movie)
     setFavorites((prev) => {
       const isFavorited = prev.some((movieId) => movieId == movie.id);
       if (isFavorited) {
@@ -58,15 +61,33 @@ const App = () => {
   };
 
   return (
-    <div className="bg-slate-200 h-[95vh] p-4">
-      <h1 className="text-[2rem] font-bold uppercase text-center pb-4">Chala-Chitra-Kendra</h1>
-      <div className="border-2 border-black rounded-md p-4 bg-slate-600">
+    <div className="w-full bg-slate-200 min-h-screen p-4 flex flex-col items-center">
+      <h1 className="text-[2rem] font-bold uppercase pb-4">
+        Chala-Chitra-Kendra
+      </h1>
+      <div className="w-[90%] border-2 border-black rounded-md p-4 bg-slate-600">
         <div className="flex justify-between items-center ">
           <FilterBar onFilterChange={handleFilterChange} />
-          <SearchBar setMovies={setMovies} />
+          <SearchBar setMovies={setMovies} toast={toast} setIsLoading={setIsLoading}/>
         </div>
-        <MovieGrid movies={movies} onFavorite={handleFavorite} favorites={favorites}/>
-        <ToastContainer />
+        <MovieGrid
+          movies={movies}
+          onFavorite={handleFavorite}
+          favorites={favorites}
+        />
+        {isLoading && <Loader />}
+        <InfiniteScroll loadMore={loadMoreMovies} />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </div>
     </div>
   );
