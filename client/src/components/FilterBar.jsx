@@ -2,8 +2,11 @@
 import { useEffect, useState } from "react";
 import { fetchAndSetGenres } from "../utils/helpers";
 import axios from "axios";
+import { useMovies } from "../context/MoviesContext";
+import { toast } from "react-toastify";
 
-const FilterBar = ({ setMovies, toast, setIsLoading }) => {
+const FilterBar = () => {
+  const { setMovies, setIsLoading } = useMovies();
   const [genres, setGenres] = useState([]);
   const [startYear, setStartYear] = useState(1900);
   const [endYear, setEndYear] = useState(new Date().getFullYear());
@@ -26,7 +29,7 @@ const FilterBar = ({ setMovies, toast, setIsLoading }) => {
     if (year <= endYear) {
       fetchFilteredMovies(selectedGenre, [year, endYear], ratingRange);
     } else {
-      toast("🦄 Start year cannot be greater than end year!");
+      toast("Start year cannot be greater than end year!");
     }
   };
 
@@ -36,7 +39,7 @@ const FilterBar = ({ setMovies, toast, setIsLoading }) => {
     if (year >= startYear) {
       fetchFilteredMovies(selectedGenre, [startYear, year], ratingRange);
     } else {
-      toast("🦄 End year cannot be less than start year!");
+      toast("End year cannot be less than start year!");
     }
   };
 
@@ -76,11 +79,11 @@ const FilterBar = ({ setMovies, toast, setIsLoading }) => {
       if (movies) {
         setMovies(movies);
       } else {
-        toast("🦄 No movies found for the selected filters!");
+        toast("No movies found for the selected filters!");
       }
     } catch (error) {
       console.error("Error fetching movies:", error);
-      toast("🦄 Error fetching movies!");
+      toast("Error fetching movies!");
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +102,11 @@ const FilterBar = ({ setMovies, toast, setIsLoading }) => {
     <div className="filter-bar p-2 flex flex-col justify-evenly items-center gap-4 rounded-md">
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <div className="border-2 border-black genre">
-          <select value={selectedGenre} onChange={handleGenreChange} className="bg-slate-300">
+          <select
+            value={selectedGenre}
+            onChange={handleGenreChange}
+            className="bg-slate-300"
+          >
             <option value="">Select Genre</option>
             {genres.map((genre) => (
               <option key={genre.id} value={genre.name}>
@@ -110,7 +117,9 @@ const FilterBar = ({ setMovies, toast, setIsLoading }) => {
         </div>
 
         <div className="border-2 border-black rounded-md bg-slate-300 text-center vvsm:px-4 vvsm:py-2">
-          <label className="text-sm vvsm:text-lg">Rating Range: {ratingRange}</label>
+          <label className="text-sm vvsm:text-lg">
+            Rating Range: {ratingRange}
+          </label>
           <input
             type="range"
             min="0"
@@ -125,7 +134,11 @@ const FilterBar = ({ setMovies, toast, setIsLoading }) => {
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="border-2 border-black rounded-md bg-slate-300 px-4">
           <label className="text-sm vvsm:text-lg">Start Year:</label>
-          <select value={startYear} onChange={handleStartYearChange} className="bg-slate-300">
+          <select
+            value={startYear}
+            onChange={handleStartYearChange}
+            className="bg-slate-300"
+          >
             {generateYearOptions().map((year) => (
               <option key={year} value={year}>
                 {year}
@@ -136,7 +149,11 @@ const FilterBar = ({ setMovies, toast, setIsLoading }) => {
 
         <div className="border-2 border-black rounded-md bg-slate-300 px-4">
           <label className="text-sm vvsm:text-lg">End Year:</label>
-          <select value={endYear} onChange={handleEndYearChange} className="bg-slate-300">
+          <select
+            value={endYear}
+            onChange={handleEndYearChange}
+            className="bg-slate-300"
+          >
             {generateYearOptions().map((year) => (
               <option key={year} value={year}>
                 {year}

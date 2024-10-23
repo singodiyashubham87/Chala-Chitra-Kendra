@@ -1,22 +1,33 @@
-/* eslint-disable no-unused-vars */
 import { useRef, useState } from "react";
 import { debounce, searchMovies } from "../utils/helpers";
+import { useMovies } from "../context/MoviesContext";
+import { toast } from "react-toastify";
 
-/* eslint-disable react/prop-types */
-const SearchBar = ({ setMovies, toast, setIsLoading }) => {
+const SearchBar = () => {
+  const { setMovies, setIsLoading } = useMovies();
   const [query, setQuery] = useState("");
 
   const debouncedSearchMovies = useRef(
     debounce(async (query) => {
       setIsLoading(true);
-      const searchResultMovies = await searchMovies(query, toast, setIsLoading, setMovies);
-      setMovies(searchResultMovies);
-      setIsLoading(false);
+      try {
+        const searchResultMovies = await searchMovies(
+          query,
+          toast,
+          setIsLoading,
+          setMovies
+        );
+        if (searchResultMovies.length > 0) setMovies(searchResultMovies);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
     })
   ).current;
 
   const handleSearch = async (e) => {
-    const newQuery = e.target.value
+    const newQuery = e.target.value;
     setQuery(newQuery);
     debouncedSearchMovies(newQuery);
   };
@@ -28,7 +39,7 @@ const SearchBar = ({ setMovies, toast, setIsLoading }) => {
         value={query}
         onChange={handleSearch}
         placeholder="Search for movies..."
-        className="border-2 border-black px-2 vvsm:py-2 vvsm:px-4 rounded-md w-[95%]" 
+        className="border-2 border-black px-2 vvsm:py-2 vvsm:px-4 rounded-md w-[95%]"
       />
     </div>
   );

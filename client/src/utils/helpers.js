@@ -23,14 +23,14 @@ const fetchMovies = async (toast, setIsLoading, page = 1) => {
     });
 
     if (!res?.data?.results) {
-      toast("🦄 Error fetching movies!");
+      toast("Error fetching movies!");
       return [];
     }
 
     return res.data.results;
   } catch (error) {
     console.error("Error in fetching movies", error);
-    toast("🦄 Error fetching movies!");
+    toast("Error fetching movies!");
     return [];
   } finally {
     setIsLoading(false);
@@ -60,13 +60,13 @@ const searchMovies = async (queryKey, toast, setIsLoading) => {
       }
     );
     if (!res?.data?.results) {
-      toast("🦄 Error searching movies!");
+      toast("Error searching movies!");
       return [];
     }
     return res.data.results;
   } catch (error) {
     console.error("Error in searching movies", error);
-    toast("🦄 Error searching movies!");
+    toast("Error searching movies!");
     return [];
   } finally {
     setIsLoading(false);

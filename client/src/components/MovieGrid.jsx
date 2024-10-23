@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
+import { useMovies } from "../context/MoviesContext";
 import MovieCard from "./MovieCard";
 import { memo } from "react";
 
-const MovieGrid = ({ movies, onFavorite, favorites }) => {
-
+const MovieGrid = () => {
+  const { movies, handleFavorite, favorites } = useMovies();
   return (
     <div className="movie-grid p-4 my-4 flex flex-wrap gap-8 justify-center">
       {Array.isArray(movies) &&
@@ -11,7 +12,7 @@ const MovieGrid = ({ movies, onFavorite, favorites }) => {
           <MovieCard
             key={movie.backdrop_path}
             movie={movie}
-            onFavorite={onFavorite}
+            handleFavorite={handleFavorite}
             favorites={favorites}
           />
         ))}
