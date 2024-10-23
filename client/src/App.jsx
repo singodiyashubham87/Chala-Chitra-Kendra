@@ -8,15 +8,20 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
-  const { isLoading } = useMovies();
-  console.log("🚀 ~ App ~ isLoading:", isLoading)
+  const { isLoading, isFavoritesShown, handleMyFavoriteClick } = useMovies();
   return (
       <div className="w-full bg-slate-200 min-h-screen px-0 py-4 md:px-4 flex flex-col items-center">
-        <div className="flex flex-col msm:flex-row w-[97%] md:w-[90%] gap-4 items-center justify-between pb-4">
-          <h1 className="text-sm vvsm:text-xl md:text-[2rem] font-bold uppercase">
-            Chala-Chitra-Kendra
-          </h1>
-        </div>
+      <div className="flex flex-col msm:flex-row w-[97%] md:w-[90%] gap-4 items-center justify-between pb-4">
+        <h1 className="text-sm vvsm:text-xl md:text-[2rem] font-bold uppercase">
+          Chala-Chitra-Kendra
+        </h1>
+        <button
+          className="text-sm vvsm:text-xl px-4 py-2 bg-slate-300 border-2 border-black rounded-md"
+          onClick={handleMyFavoriteClick}
+        >
+          {isFavoritesShown ? "All Movies" : "My Favorites"}
+        </button>
+      </div>
         <div className="w-[97%] md:w-[90%] border-2 border-black rounded-md p-4 bg-slate-600">
           <div className="flex flex-col gap-2 md:px-8 justify-between items-center mmd:flex-row md:gap-0">
             <FilterBar />

@@ -14,7 +14,7 @@ const FilterBar = () => {
   const [ratingRange, setRatingRange] = useState(0);
 
   useEffect(() => {
-    fetchAndSetGenres(setGenres);
+    fetchAndSetGenres(setGenres, toast, setIsLoading);
   }, []);
 
   const handleGenreChange = (e) => {

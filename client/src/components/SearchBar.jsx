@@ -15,7 +15,6 @@ const SearchBar = () => {
           query,
           toast,
           setIsLoading,
-          setMovies
         );
         if (searchResultMovies.length > 0) setMovies(searchResultMovies);
       } catch (error) {

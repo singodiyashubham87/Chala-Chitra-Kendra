@@ -1,104 +1,64 @@
 import axios from "axios";
 
-export const saveToLocalStorage = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value));
-};
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN}`,
+  },
+});
 
-export const getFromLocalStorage = (key) => {
-  return JSON.parse(localStorage.getItem(key)) || [];
-};
-
-const fetchMovies = async (toast, setIsLoading, page = 1) => {
+const apiRequest = async (url, params, setIsLoading, toast) => {
   try {
     setIsLoading(true);
-    const url = import.meta.env.VITE_BASE_URL;
-    const res = await axios.get(`${url}/discover/movie`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${
-          import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN
-        }`,
-      },
-      params: { page, include_adult: false },
-    });
-
-    if (!res?.data?.results) {
-      toast("Error fetching movies!");
-      return [];
-    }
-
-    return res.data.results;
+    const response = await api.get(url, { params });
+    return response?.data?.results || [];
   } catch (error) {
-    console.error("Error in fetching movies", error);
-    toast("Error fetching movies!");
+    console.error(`Error fetching from ${url}:`, error);
+    toast(`Error fetching data!`);
     return [];
   } finally {
     setIsLoading(false);
   }
 };
 
-const searchMovies = async (queryKey, toast, setIsLoading) => {
-  try {
-    setIsLoading(true);
-
-    if (!queryKey) {
-      return await fetchMovies(toast, setIsLoading);
-    }
-    const res = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/search/movie`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN
-          }`,
-        },
-        params: {
-          query: queryKey,
-          include_adult: false,
-        },
-      }
-    );
-    if (!res?.data?.results) {
-      toast("Error searching movies!");
-      return [];
-    }
-    return res.data.results;
-  } catch (error) {
-    console.error("Error in searching movies", error);
-    toast("Error searching movies!");
-    return [];
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const debounce = (func) => {
+const debounce = (func, delay = 300) => {
   let timer;
   return function (...args) {
-    const context = this;
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => {
-      timer = null;
-      func.apply(context, args);
-    }, 300);
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(this, args), delay);
   };
 };
 
-const fetchAndSetGenres = async (setGenres) => {
-  const res = await axios.get(
-    `${import.meta.env.VITE_BASE_URL}/genre/movie/list`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${
-          import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN
-        }`,
-      },
-    }
+const fetchMovies = (toast, setIsLoading, page = 1) =>
+  apiRequest(
+    "/discover/movie",
+    { page, include_adult: false },
+    setIsLoading,
+    toast
   );
-  const genres = res?.data?.genres;
-  setGenres(genres);
+
+const searchMovies = async (queryKey, toast, setIsLoading) => {
+  if (!queryKey) return fetchMovies(toast, setIsLoading);
+  return apiRequest(
+    "/search/movie",
+    { query: queryKey, include_adult: false },
+    setIsLoading,
+    toast
+  );
+};
+
+const fetchAndSetGenres = async (setGenres, toast, setIsLoading) => {
+  try {
+    setIsLoading(true);
+    const response = await api.get("/genre/movie/list");
+    setGenres(response?.data?.genres || []);
+  } catch (error) {
+    console.error("Error fetching genres:", error);
+    toast("Error fetching genres!");
+  } finally {
+    setIsLoading(false);
+  }
 };
 
 export { fetchMovies, searchMovies, debounce, fetchAndSetGenres };

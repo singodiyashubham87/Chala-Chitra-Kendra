@@ -4,16 +4,14 @@ import MovieCard from "./MovieCard";
 import { memo } from "react";
 
 const MovieGrid = () => {
-  const { movies, handleFavorite, favorites } = useMovies();
+  const { movies } = useMovies();
   return (
     <div className="movie-grid p-4 my-4 flex flex-wrap gap-8 justify-center">
       {Array.isArray(movies) &&
         movies.map((movie) => (
           <MovieCard
-            key={movie.backdrop_path}
+            key={movie.backdrop_path+movie.id}
             movie={movie}
-            handleFavorite={handleFavorite}
-            favorites={favorites}
           />
         ))}
     </div>

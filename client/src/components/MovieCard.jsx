@@ -1,5 +1,8 @@
+import { useMovies } from "../context/MoviesContext";
+
 /* eslint-disable react/prop-types */
-const MovieCard = ({ movie, onFavorite, favorites }) => {
+const MovieCard = ({movie}) => {
+  const { handleFavorite, favorites } = useMovies();
   return (
     <div className="movie-card border-2 border-black bg-slate-400 flex flex-col gap-4 p-2 rounded-md">
       <div className="border-2 border-black w-52 h-24 vvsm:w-72 vvsm:h-44 overflow-hidden rounded-lg">
@@ -22,7 +25,7 @@ const MovieCard = ({ movie, onFavorite, favorites }) => {
             <strong>Release Year:</strong> {movie?.release_date?.split("-")[0]}
           </h3>
         </div>
-        <button onClick={() => onFavorite(movie)} className="text-[2rem]">
+        <button onClick={(e) => handleFavorite(e, movie)} className="text-[2rem]">
           {favorites ? (favorites.includes(movie.id) ? "★" : "☆") : "☆"}
         </button>
       </div>
