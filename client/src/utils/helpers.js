@@ -1,21 +1,20 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN}`,
-  },
-});
-
-const apiRequest = async (url, params, setIsLoading, toast) => {
+const apiRequest = async (endpoint, params, setIsLoading, toast) => {
   try {
     setIsLoading(true);
-    const response = await api.get(url, { params });
+    const URL = import.meta.env.VITE_BASE_URL + endpoint
+    const response = await axios.get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN}`,
+      },
+      params,
+    });
     return response?.data?.results || [];
   } catch (error) {
-    console.error(`Error fetching from ${url}:`, error);
-    toast(`Error fetching data!`);
+    console.error(`Error fetching from ${URL}:`, error);
+    toast(`Error fetching from ${URL}:`);
     return [];
   } finally {
     setIsLoading(false);
@@ -48,11 +47,18 @@ const searchMovies = async (queryKey, toast, setIsLoading) => {
   );
 };
 
-const fetchAndSetGenres = async (setGenres, toast, setIsLoading) => {
+const fetchAndSetGenres = async (toast, setIsLoading) => {
   try {
+    console.log('HEHE: ')
     setIsLoading(true);
-    const response = await api.get("/genre/movie/list");
-    setGenres(response?.data?.genres || []);
+    const URL = import.meta.env.VITE_BASE_URL + "/genre/movie/list"
+    const response = await axios.get(URL,{
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_READ_ACCESS_TOKEN}`,
+      },
+    });
+    return response?.data?.genres || []
   } catch (error) {
     console.error("Error fetching genres:", error);
     toast("Error fetching genres!");

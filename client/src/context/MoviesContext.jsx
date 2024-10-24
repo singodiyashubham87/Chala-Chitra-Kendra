@@ -74,9 +74,9 @@ export const MoviesProvider = ({ children }) => {
         isFavoritesShown,
         setIsFavoritesShown,
         favorites,
+        loadMoreMovies,
         handleFavorite,
         handleMyFavoriteClick,
-        loadMoreMovies,
       }}
     >
       {children}

@@ -14,7 +14,11 @@ const FilterBar = () => {
   const [ratingRange, setRatingRange] = useState(0);
 
   useEffect(() => {
-    fetchAndSetGenres(setGenres, toast, setIsLoading);
+    const fetchGenres = async () => {
+      const genres = await fetchAndSetGenres(toast, setIsLoading);
+      setGenres(genres);
+    };
+    fetchGenres();
   }, []);
 
   const handleGenreChange = (e) => {
@@ -108,11 +112,12 @@ const FilterBar = () => {
             className="bg-slate-300"
           >
             <option value="">Select Genre</option>
-            {genres.map((genre) => (
-              <option key={genre.id} value={genre.name}>
-                {genre.name}
-              </option>
-            ))}
+            {Array.isArray(genres) &&
+              genres.map((genre) => (
+                <option key={genre.id} value={genre.name}>
+                  {genre.name}
+                </option>
+              ))}
           </select>
         </div>
 
