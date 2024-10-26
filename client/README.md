@@ -41,7 +41,7 @@ Follow these steps to get started
 1. Clone the repository:
 ```bash
 git clone https://github.com/singodiyashubham87/Chala-Chitra-Kendra.git
-cd Chala-Chitra-Kendra
+cd Chala-Chitra-Kendra/client
 ```
    
 2. Install dependencies:
